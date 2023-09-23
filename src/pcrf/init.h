@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 by Sukchan Lee <acetcom@gmail.com>
+ * Copyright (C) 2019-2022 by Sukchan Lee <acetcom@gmail.com>
  *
  * This file is part of Open5GS.
  *
@@ -17,24 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef AF_INIT_H
+#define AF_INIT_H
+
 #include "ogs-app.h"
 
-int app_initialize(const char *const argv[])
-{
-    int rv;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-    rv = pcrf_initialize();
-    if (rv != OGS_OK) {
-        ogs_warn("Failed to intialize PCRF/AF");
-        return rv;
-    }
-    ogs_info("PCRF/AF initialize...done");
+int af_initialize(void);
+void af_terminate(void);
 
-    return OGS_OK;
+#ifdef __cplusplus
 }
+#endif
 
-void app_terminate(void)
-{
-    pcrf_terminate();
-    ogs_info("PCRF/AF terminate...done");
-}
+#endif /* AF_INIT_H */

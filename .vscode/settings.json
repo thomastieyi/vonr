@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "stat.h": "c",
+        "version.h": "c",
+        "init.h": "c",
+        "sbi-path.h": "c"
+    }
+}

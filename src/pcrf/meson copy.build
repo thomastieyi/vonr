@@ -1,4 +1,4 @@
-# Copyright (C) 2019 by Sukchan Lee <acetcom@gmail.com>
+# Copyright (C) 2019-2022 by Sukchan Lee <acetcom@gmail.com>
 
 # This file is part of Open5GS.
 
@@ -15,16 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-libpcrf_sources = files('''
-    pcrf-context.h
-    pcrf-fd-path.h
-
-    pcrf-init.c
-    pcrf-context.c
-    pcrf-fd-path.c
-    pcrf-gx-path.c
-    pcrf-rx-path.c
-
+libaf_sources = files('''
     context.c
     event.c
     local.c
@@ -43,34 +34,15 @@ libpcrf_sources = files('''
     init.c
 '''.split())
 
-libpcrf = static_library('pcrf',
-    sources : libpcrf_sources,
+libaf = static_library('af',
+    sources : libaf_sources,
     dependencies : [libapp_dep,
-                    libdbi_dep,
-                    libdiameter_rx_dep,
-                    libdiameter_gx_dep,
                     libcrypt_dep,
                     libsbi_dep],
     install : false)
 
-libpcrf_dep = declare_dependency(
-    link_with : libpcrf,
+libaf_dep = declare_dependency(
+    link_with : libaf,
     dependencies : [libapp_dep,
-                    libdbi_dep,
-                    libdiameter_rx_dep,
-                    libdiameter_gx_dep,
                     libcrypt_dep,
                     libsbi_dep])
-
-pcrf_sources = files('''
-    app-init.c
-    ../main.c
-'''.split())
-
-executable('open5gs-pcrfd',
-    sources : pcrf_sources,
-    c_args : '-DDEFAULT_CONFIG_FILENAME="@0@/pcrf.yaml"'.format(open5gs_sysconfdir),
-    include_directories : srcinc,
-    dependencies : libpcrf_dep,
-    install_rpath : libdir,
-    install : true)

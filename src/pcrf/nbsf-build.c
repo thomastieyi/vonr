@@ -17,24 +17,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ogs-app.h"
+#include "nbsf-build.h"
 
-int app_initialize(const char *const argv[])
+ogs_sbi_request_t *af_nbsf_management_build_discover(
+        af_sess_t *sess, void *data)
 {
-    int rv;
+    ogs_sbi_message_t message;
+    ogs_sbi_request_t *request = NULL;
 
-    rv = pcrf_initialize();
-    if (rv != OGS_OK) {
-        ogs_warn("Failed to intialize PCRF/AF");
-        return rv;
-    }
-    ogs_info("PCRF/AF initialize...done");
+    ogs_assert(sess);
 
-    return OGS_OK;
-}
+    memset(&message, 0, sizeof(message));
+    message.h.method = (char *)OGS_SBI_HTTP_METHOD_GET;
+    message.h.service.name = (char *)OGS_SBI_SERVICE_NAME_NBSF_MANAGEMENT;
+    message.h.api.version = (char *)OGS_SBI_API_V1;
+    message.h.resource.component[0] =
+        (char *)OGS_SBI_RESOURCE_NAME_PCF_BINDINGS;
 
-void app_terminate(void)
-{
-    pcrf_terminate();
-    ogs_info("PCRF/AF terminate...done");
+    message.param.ipv4addr = sess->ipv4addr;
+    message.param.ipv6prefix = sess->ipv6prefix;
+
+    request = ogs_sbi_build_request(&message);
+    ogs_expect(request);
+    
+    return request;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 by Sukchan Lee <acetcom@gmail.com>
+ * Copyright (C) 2019-2022 by Sukchan Lee <acetcom@gmail.com>
  *
  * This file is part of Open5GS.
  *
@@ -17,24 +17,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ogs-app.h"
+#ifndef AF_SM_H
+#define AF_SM_H
 
-int app_initialize(const char *const argv[])
-{
-    int rv;
+#include "event.h"
 
-    rv = pcrf_initialize();
-    if (rv != OGS_OK) {
-        ogs_warn("Failed to intialize PCRF/AF");
-        return rv;
-    }
-    ogs_info("PCRF/AF initialize...done");
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-    return OGS_OK;
+void af_state_initial(ogs_fsm_t *s, af_event_t *e);
+void af_state_final(ogs_fsm_t *s, af_event_t *e);
+void af_state_operational(ogs_fsm_t *s, af_event_t *e);
+void af_state_exception(ogs_fsm_t *s, af_event_t *e);
+
+#define af_sm_debug(__pe) \
+    ogs_debug("%s(): %s", __func__, af_event_get_name(__pe))
+
+#ifdef __cplusplus
 }
+#endif
 
-void app_terminate(void)
-{
-    pcrf_terminate();
-    ogs_info("PCRF/AF terminate...done");
-}
+#endif /* AF_SM_H */

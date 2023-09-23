@@ -17,24 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ogs-app.h"
+#ifndef AF_NBSF_BUILD_H
+#define AF_NBSF_BUILD_H
 
-int app_initialize(const char *const argv[])
-{
-    int rv;
+#include "context.h"
 
-    rv = pcrf_initialize();
-    if (rv != OGS_OK) {
-        ogs_warn("Failed to intialize PCRF/AF");
-        return rv;
-    }
-    ogs_info("PCRF/AF initialize...done");
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-    return OGS_OK;
+ogs_sbi_request_t *af_nbsf_management_build_discover(
+        af_sess_t *sess, void *data);
+
+#ifdef __cplusplus
 }
+#endif
 
-void app_terminate(void)
-{
-    pcrf_terminate();
-    ogs_info("PCRF/AF terminate...done");
-}
+#endif /* AF_NBSF_BUILD_H */

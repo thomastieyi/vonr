@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 by Sukchan Lee <acetcom@gmail.com>
+ * Copyright (C) 2019,2020 by Sukchan Lee <acetcom@gmail.com>
  *
  * This file is part of Open5GS.
  *
@@ -17,24 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "ogs-app.h"
+#ifndef AF_NBSF_HANDLER_H
+#define AF_NBSF_HANDLER_H
 
-int app_initialize(const char *const argv[])
-{
-    int rv;
+#include "context.h"
 
-    rv = pcrf_initialize();
-    if (rv != OGS_OK) {
-        ogs_warn("Failed to intialize PCRF/AF");
-        return rv;
-    }
-    ogs_info("PCRF/AF initialize...done");
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-    return OGS_OK;
+void af_nbsf_management_handle_pcf_binding(
+        af_sess_t *sess, ogs_sbi_message_t *recvmsg);
+
+#ifdef __cplusplus
 }
+#endif
 
-void app_terminate(void)
-{
-    pcrf_terminate();
-    ogs_info("PCRF/AF terminate...done");
-}
+#endif /* AF_NBSF_HANDLER_H */

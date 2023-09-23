@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 by Sukchan Lee <acetcom@gmail.com>
+ * Copyright (C) 2019-2022 by Sukchan Lee <acetcom@gmail.com>
  *
  * This file is part of Open5GS.
  *
@@ -17,20 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "pcrf-context.h"
-#include "pcrf-fd-path.h"
 #include "init.h"
 #include "sbi-path.h"
-static int initialized = 0;
+
 static ogs_thread_t *thread;
 static void af_main(void *data);
 
+static int initialized = 0;
 
-int pcrf_initialize(void)
+int af_initialize(void)
 {
-    int rv; 
+    int rv;
 
-    pcrf_context_init();
     ogs_sbi_context_init(OpenAPI_nf_type_AF);
     af_context_init();
 
@@ -40,19 +38,9 @@ int pcrf_initialize(void)
     rv = af_context_parse_config();
     if (rv != OGS_OK) return rv;
 
-
-    rv = pcrf_context_parse_config();
-    if (rv != OGS_OK) return rv;
-
     rv = ogs_log_config_domain(
             ogs_app()->logger.domain, ogs_app()->logger.level);
     if (rv != OGS_OK) return rv;
-
-    rv = ogs_dbi_init(ogs_app()->db_uri);
-    if (rv != OGS_OK) return rv;
-
-    rv = pcrf_fd_init();
-    if (rv != OGS_OK) return OGS_ERROR;
 
     rv = af_sbi_open();
     if (rv != 0) return OGS_ERROR;
@@ -86,12 +74,11 @@ static void event_termination(void)
     ogs_pollset_notify(ogs_app()->pollset);
 }
 
-
-void pcrf_terminate(void)
+void af_terminate(void)
 {
     if (!initialized) return;
 
-     /* Daemon terminating */
+    /* Daemon terminating */
     event_termination();
     ogs_thread_destroy(thread);
     ogs_timer_delete(t_termination_holding);
@@ -100,13 +87,6 @@ void pcrf_terminate(void)
 
     af_context_final();
     ogs_sbi_context_final();
-
-    pcrf_fd_final();
-
-    ogs_dbi_final();
-    pcrf_context_final();
-
-    return;
 }
 
 static void af_main(void *data)

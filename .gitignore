@@ -3,5 +3,7 @@ subprojects/freeDiameter
 subprojects/libtins
 subprojects/prometheus-client-c
 subprojects/usrsctp
-
+install
 webui/.next
+tests/af/build
+build/

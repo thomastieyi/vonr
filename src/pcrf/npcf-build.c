@@ -59,7 +59,7 @@ ogs_sbi_request_t *af_npcf_policyauthorization_build_create(
     af_param = data;
     ogs_assert(af_param);
     ogs_assert(af_param->med_type);
-    ogs_error("npcf_build");
+
     memset(&message, 0, sizeof(message));
     message.h.method = (char *)OGS_SBI_HTTP_METHOD_POST;
     message.h.service.name =

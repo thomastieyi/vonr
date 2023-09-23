@@ -20,6 +20,8 @@
 #include "pcrf-context.h"
 #include "pcrf-fd-path.h"
 
+#include "ogs-app.h"
+#include "sbi-path.h"
 struct sess_state {
     os0_t   rx_sid;             /* Rx Session-Id */
     os0_t   gx_sid;             /* Gx Session-Id */
@@ -108,6 +110,7 @@ static int pcrf_rx_aar_cb( struct msg **msg, struct avp *avp,
     struct avp_hdr *hdr;
     union avp_value val;
     struct sess_state *sess_data = NULL;
+    af_sess_t *af_sess = NULL;
     size_t sidlen;
 
     ogs_diam_rx_message_t rx_message;
@@ -169,13 +172,20 @@ static int pcrf_rx_aar_cb( struct msg **msg, struct avp *avp,
     if (avp) {
         ret = fd_msg_avp_hdr(avp, &hdr);
         ogs_assert(ret == 0);
-        gx_sid = (os0_t)pcrf_sess_find_by_ipv4(hdr->avp_value->os.data);
+        gx_sid = (os0_t)pcrf_sess_find_by_ipv4(hdr->avp_value->os.data);// To bind bcf here
         if (!gx_sid) {
+            af_sess = af_sess_add_by_ue_address_ip_string(OGS_INET_NTOP(hdr->avp_value->os.data, buf));
+            af_local_discover_and_send(
+                    OGS_SBI_SERVICE_TYPE_NBSF_MANAGEMENT,
+                    af_sess, NULL,
+                    af_nbsf_management_build_discover);
+            ogs_msleep(50); //等待PCF binding
             ogs_warn("Cannot find Gx Sesson for IPv4:%s",
                     OGS_INET_NTOP(hdr->avp_value->os.data, buf));
         }
     }
-
+    af_npcf_policyauthorization_param_t af_param;
+    memset(&af_param, 0, sizeof(af_param));
     if (!gx_sid) {
         /* Get Framed-IPv6-Prefix */
         ret = fd_msg_search_avp(qry, ogs_diam_rx_framed_ipv6_prefix, &avp);
@@ -197,8 +207,14 @@ static int pcrf_rx_aar_cb( struct msg **msg, struct avp *avp,
     }
 
     if (!gx_sid) {
-        ogs_error("No Gx Session");
-        goto out;
+        if (af_sess->pcf.num_of_ip==0){
+            ogs_error("No Gx Session, try to find af-sess");
+
+            goto out;
+        }
+        else{
+            ogs_info("OK, find af-sess");
+        }
     }
 
     ret = fd_msg_browse(qry, MSG_BRW_FIRST_CHILD, &avpch1, NULL);
@@ -231,7 +247,11 @@ static int pcrf_rx_aar_cb( struct msg **msg, struct avp *avp,
         case OGS_DIAM_RX_AVP_CODE_MEDIA_COMPONENT_DESCRIPTION:
             media_component = &rx_message.ims_data.
                     media_component[rx_message.ims_data.num_of_media_component];
-
+            af_param.med_type  = OpenAPI_media_type_AUDIO;
+            af_param.qos_type  = 1;
+            af_param.flow_type = 1;
+            af_local_send_to_pcf(af_sess, &af_param,
+            af_npcf_policyauthorization_build_create);
             ret = fd_msg_browse(avpch1, MSG_BRW_FIRST_CHILD, &avpch2, NULL);
             ogs_assert(ret == 0);
             while (avpch2) {
