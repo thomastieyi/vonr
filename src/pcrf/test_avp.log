@@ -1,0 +1,44 @@
+  Version: 0x01
+  Length: 960
+  Flags: 0xC0 (RP--)
+  Command Code: 265
+  ApplicationId: 16777236
+  Hop-by-Hop Identifier: 0x64F0B9DE
+  End-to-End Identifier: 0x3E3474AA
+   {internal data}: src:pcscf.ims.mnc001.mcc001.3gppnetwork.org(39) rwb:(nil) rt:1 cb:(nil),(nil)((nil)) qry:(nil) asso:0 sess:(nil)
+   AVP: 'Session-Id'(263) l=62 f=-M val="pcscf.ims.mnc001.mcc001.3gppnetwork.org;3264668643;136"
+   AVP: 'Origin-Host'(264) l=47 f=-M val="pcscf.ims.mnc001.mcc001.3gppnetwork.org"
+   AVP: 'Origin-Realm'(296) l=41 f=-M val="ims.mnc001.mcc001.3gppnetwork.org"
+   AVP: 'Auth-Application-Id'(258) l=12 f=-M val=16777236 (0x1000014)
+   AVP: 'Vendor-Specific-Application-Id'(260) l=32 f=-M val=(grouped)
+      AVP: 'Vendor-Id'(266) l=12 f=-M val=10415 (0x28af)
+      AVP: 'Auth-Application-Id'(258) l=12 f=-M val=16777236 (0x1000014)
+   AVP: 'Destination-Realm'(283) l=41 f=-M val="epc.mnc001.mcc001.3gppnetwork.org"
+   AVP: 'Subscription-Id'(443) l=84 f=-M val=(grouped)
+      AVP: 'Subscription-Id-Type'(450) l=12 f=-M val='END_USER_SIP_URI' (2 (0x2))
+      AVP: 'Subscription-Id-Data'(444) l=61 f=-M val="sip:001010000000002@ims.mnc001.mcc001.3gppnetwork.org"
+   AVP: 'Media-Component-Description'(517) vend='3GPP'(10415) l=452 f=VM val=(grouped)
+      AVP: 'Media-Component-Number'(518) vend='3GPP'(10415) l=16 f=VM val=1 (0x1)
+      AVP: 'Media-Sub-Component'(519) vend='3GPP'(10415) l=332 f=VM val=(grouped)
+         AVP: 'Flow-Number'(509) vend='3GPP'(10415) l=16 f=VM val=1 (0x1)
+         AVP: 'Flow-Description'(507) vend='3GPP'(10415) l=72 f=VM val="permit out ip from 172.22.0.21 31943 to 192.168.101.45 31943"
+         AVP: 'Flow-Description'(507) vend='3GPP'(10415) l=71 f=VM val="permit in ip from 192.168.101.45 31943 to 172.22.0.21 31943"
+         AVP: 'Flow-Description'(507) vend='3GPP'(10415) l=72 f=VM val="permit out ip from 172.22.0.21 31945 to 192.168.101.45 31945"
+         AVP: 'Flow-Description'(507) vend='3GPP'(10415) l=71 f=VM val="permit in ip from 192.168.101.45 31945 to 172.22.0.21 31945"
+         AVP: 'Flow-Usage'(512) vend='3GPP'(10415) l=16 f=VM val=2 (0x2)
+      AVP: 'Media-Type'(520) vend='3GPP'(10415) l=16 f=VM val=4 (0x4)
+      AVP: 'Codec-Data'(524) vend='3GPP'(10415) l=26 f=VM val=<75 70 6C 69 6E 6B 0A 6F 66 66 65 72 0A 00>
+      AVP: 'Codec-Data'(524) vend='3GPP'(10415) l=29 f=VM val=<64 6F 77 6E 6C 69 6E 6B 0A 61 6E 73 77 65 72 0A 00>
+      AVP: 'Flow-Status'(511) vend='3GPP'(10415) l=16 f=VM val=2 (0x2)
+   AVP: 'Specific-Action'(513) vend='3GPP'(10415) l=16 f=VM val=1 (0x1)
+   AVP: 'Specific-Action'(513) vend='3GPP'(10415) l=16 f=VM val=2 (0x2)
+   AVP: 'Specific-Action'(513) vend='3GPP'(10415) l=16 f=VM val=3 (0x3)
+   AVP: 'Specific-Action'(513) vend='3GPP'(10415) l=16 f=VM val=4 (0x4)
+   AVP: 'Specific-Action'(513) vend='3GPP'(10415) l=16 f=VM val=5 (0x5)
+   AVP: 'Specific-Action'(513) vend='3GPP'(10415) l=16 f=VM val=6 (0x6)
+   AVP: 'Specific-Action'(513) vend='3GPP'(10415) l=16 f=VM val=12 (0xc)
+   AVP: 'Framed-IP-Address'(8) l=12 f=-M val=<C0 A8 65 2D>
+   AVP: 'Authorization-Lifetime'(291) l=12 f=-M val=36000 (0x8ca0)
+   AVP: 'Auth-Grace-Period'(276) l=12 f=-M val=0 (0x0)
+   AVP: 'Session-Timeout'(27) l=12 f=-M val=36000 (0x8ca0)
+   AVP: 'Route-Record'(282) l=8 f=-M val="pcscf.ims.mnc001.mcc001.3gppnetwork.org"

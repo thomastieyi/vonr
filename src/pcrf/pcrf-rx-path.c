@@ -186,6 +186,7 @@ static int pcrf_rx_aar_cb( struct msg **msg, struct avp *avp,
     }
     af_npcf_policyauthorization_param_t af_param;
     memset(&af_param, 0, sizeof(af_param));
+    af_param.fDescList = OpenAPI_list_create();
     if (!gx_sid) {
         /* Get Framed-IPv6-Prefix */
         ret = fd_msg_search_avp(qry, ogs_diam_rx_framed_ipv6_prefix, &avp);
@@ -247,11 +248,6 @@ static int pcrf_rx_aar_cb( struct msg **msg, struct avp *avp,
         case OGS_DIAM_RX_AVP_CODE_MEDIA_COMPONENT_DESCRIPTION:
             media_component = &rx_message.ims_data.
                     media_component[rx_message.ims_data.num_of_media_component];
-            af_param.med_type  = OpenAPI_media_type_AUDIO;
-            af_param.qos_type  = 1;
-            af_param.flow_type = 1;
-            af_local_send_to_pcf(af_sess, &af_param,
-            af_npcf_policyauthorization_build_create);
             ret = fd_msg_browse(avpch1, MSG_BRW_FIRST_CHILD, &avpch2, NULL);
             ogs_assert(ret == 0);
             while (avpch2) {
@@ -306,12 +302,23 @@ static int pcrf_rx_aar_cb( struct msg **msg, struct avp *avp,
                         case OGS_DIAM_RX_AVP_CODE_FLOW_USAGE:
                             switch (hdr->avp_value->i32) {
                             case OGS_DIAM_RX_FLOW_USAGE_NO_INFORMATION:
+                                af_param.med_type  = OpenAPI_media_type_AUDIO;
+                                af_param.qos_type  = 1;
+                                af_param.flow_type = 1;
+                                
                                 sub->flow_usage = OGS_FLOW_USAGE_NO_INFO;
                                 break;
                             case OGS_DIAM_RX_FLOW_USAGE_RTCP:
+                                af_param.med_type  = OpenAPI_media_type_AUDIO;
+                                af_param.qos_type  = 1;
+                                af_param.flow_type = 1;
+                                
                                 sub->flow_usage = OGS_FLOW_USAGE_RTCP;
                                 break;
                             case OGS_DIAM_RX_FLOW_USAGE_AF_SIGNALLING:
+                                af_param.med_type  = OpenAPI_media_type_AUDIO;
+                                af_param.qos_type  = 99;
+                                af_param.flow_type = 99;
                                 sub->flow_usage = OGS_FLOW_USAGE_AF_SIGNALLING;
                                 break;
                             default:
@@ -323,6 +330,10 @@ static int pcrf_rx_aar_cb( struct msg **msg, struct avp *avp,
                             ogs_assert(sub->num_of_flow <
                                     OGS_MAX_NUM_OF_FLOW_IN_MEDIA_SUB_COMPONENT);
                             flow = &sub->flow[sub->num_of_flow];
+                            OpenAPI_list_add(af_param.fDescList,
+                                ogs_strndup(
+                                    (char*)hdr->avp_value->os.data,
+                                    hdr->avp_value->os.len));
                             flow->description = ogs_strndup(
                                     (char*)hdr->avp_value->os.data,
                                     hdr->avp_value->os.len);
@@ -355,8 +366,15 @@ static int pcrf_rx_aar_cb( struct msg **msg, struct avp *avp,
         }
         fd_msg_browse(avpch1, MSG_BRW_NEXT, &avpch1, NULL);
     }
+    if (af_param.flow_type != 99 ) {
+            af_local_send_to_pcf(af_sess, &af_param,
+                                af_npcf_policyauthorization_build_create);
+    }
 
     /* Send Re-Auth Request */
+        if (!gx_sid) {
+            goto out;
+    }
     rv = pcrf_gx_send_rar(gx_sid, sess_data->rx_sid, &rx_message);
     if (rv != OGS_OK) {
         result_code = rx_message.result_code;

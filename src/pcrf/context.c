@@ -179,7 +179,7 @@ af_sess_t *af_sess_add_by_ue_address_ip_string(char *ue_address_ipv4)
             (int)ogs_pool_index(&af_sess_pool, sess));
     ogs_assert(sess->af_app_session_id);
 
-        sess->ipv4addr = ue_address_ipv4;
+        sess->ipv4addr = ogs_strdup(ue_address_ipv4);
         ogs_assert(sess->ipv4addr);
 
 

@@ -191,7 +191,7 @@ ogs_sbi_request_t *af_npcf_policyauthorization_build_create(
     ogs_assert(SubComponent);
 
     SubComponent->f_num = (j++);
-    SubComponent->flow_usage = OpenAPI_flow_usage_NO_INFO;
+    SubComponent->flow_usage = OpenAPI_flow_usage_RTCP;
 
     SubComponentMap = OpenAPI_map_create(
             ogs_msprintf("%d", SubComponent->f_num), SubComponent);
@@ -202,7 +202,7 @@ ogs_sbi_request_t *af_npcf_policyauthorization_build_create(
 
     /* Flow Description */
     fDescList = OpenAPI_list_create();
-    ogs_assert(fDescList);
+    ogs_assert(af_param->fDescList);
     if (af_param->flow_type == 0) {
         /* Nothing */
     } else if (af_param->flow_type == 1) {
@@ -217,9 +217,9 @@ ogs_sbi_request_t *af_npcf_policyauthorization_build_create(
             ogs_strdup("permit in 17 from any to any"));
     } else if (af_param->flow_type == 99) {
         OpenAPI_list_add(fDescList,
-            ogs_strdup("permit out icmp from any to any"));
+            ogs_strdup("permit out 17 from any to any"));
         OpenAPI_list_add(fDescList,
-            ogs_strdup("permit in icmp from any to any"));
+            ogs_strdup("permit in 17 from any to any"));
     } else {
         ogs_assert_if_reached();
     }
@@ -228,44 +228,7 @@ ogs_sbi_request_t *af_npcf_policyauthorization_build_create(
     else
         OpenAPI_list_free(fDescList);
 
-    /* Sub Component #2 */
-    SubComponent = ogs_calloc(1, sizeof(*SubComponent));
-    ogs_assert(SubComponent);
-
-    SubComponent->f_num = (j++);
-    SubComponent->flow_usage = OpenAPI_flow_usage_RTCP;
-
-    SubComponentMap = OpenAPI_map_create(
-            ogs_msprintf("%d", SubComponent->f_num), SubComponent);
-    ogs_assert(SubComponentMap);
-    ogs_assert(SubComponentMap->key);
-
-    OpenAPI_list_add(SubComponentList, SubComponentMap);
-
-    /* Flow Description */
-    fDescList = OpenAPI_list_create();
-    ogs_assert(fDescList);
-    if (af_param->flow_type == 0) {
-        /* Nothing */
-    } else if (af_param->flow_type == 1 || af_param->flow_type == 99) {
-        OpenAPI_list_add(fDescList,
-            ogs_strdup("permit out 17 from any to any"));
-        OpenAPI_list_add(fDescList,
-            ogs_strdup("permit in 17 from any to any"));
-    } else if (af_param->flow_type == 2) {
-        OpenAPI_list_add(fDescList,
-            ogs_strdup("permit out 17 from any to any"));
-        OpenAPI_list_add(fDescList,
-            ogs_strdup("permit in 17 from any to any"));
-    } else {
-        ogs_assert_if_reached();
-    }
-
-    if (fDescList->count)
-        SubComponent->f_descs = fDescList;
-    else
-        OpenAPI_list_free(fDescList);
-
+    
     ogs_assert(SubComponentList->count);
     MediaComponent->med_sub_comps = SubComponentList;
 
@@ -329,6 +292,7 @@ ogs_sbi_request_t *af_npcf_policyauthorization_build_create(
                                 if (node3->data) ogs_free(node3->data);
                             }
                             OpenAPI_list_free(fDescList);
+                            // OpenAPI_list_free(af_param->fDescList);
 
                             ogs_free(SubComponent);
                         }
